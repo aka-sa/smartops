@@ -3,3 +3,4 @@ streamlit
 faiss-cpu
 numpy
 requests
+matplotlib

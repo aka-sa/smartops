@@ -1,8 +1,15 @@
-def get_all_expenses():
-    c.execute("SELECT amount, category FROM expenses")
-    return c.fetchall()
 
+import sqlite3
+conn=sqlite3.connect("smartops.db",check_same_thread=False)
+c=conn.cursor()
 
-def get_category_summary():
-    c.execute("SELECT category, SUM(amount) FROM expenses GROUP BY category")
-    return c.fetchall()
+c.execute("CREATE TABLE IF NOT EXISTS expenses(id INTEGER PRIMARY KEY,amount REAL,category TEXT)")
+conn.commit()
+
+def add_expense(a,cg):
+    c.execute("INSERT INTO expenses(amount,category) VALUES(?,?)",(a,cg))
+    conn.commit()
+
+def get_all():
+    c.execute("SELECT amount FROM expenses")
+    return [x[0] for x in c.fetchall()]

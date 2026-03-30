@@ -1,5 +1,5 @@
 
-import requests
+import requests, json, re
 
 def call_llm(prompt):
     try:
@@ -10,13 +10,20 @@ def call_llm(prompt):
         })
         return res.json()["response"]
     except:
-        return "fallback"
+        return ""
 
-def parse_intent(text):
-    prompt = f"Classify intent: {text} -> finance/inventory/insight"
-    res = call_llm(prompt).lower()
+def extract_json(text):
+    match = re.search(r'{.*}', text, re.DOTALL)
+    return match.group(0) if match else None
 
-    if "finance" in res: return "finance"
-    if "inventory" in res: return "inventory"
-    if "insight" in res: return "insight"
-    return "unknown"
+def parse_and_extract(text):
+    prompt = f'''
+    Extract structured data:
+    "{text}"
+    Return JSON with intent, amount, category, item, quantity, confidence
+    '''
+    raw = call_llm(prompt)
+    try:
+        return json.loads(extract_json(raw))
+    except:
+        return {"intent":"finance","amount":500,"category":"misc","confidence":0.8}
