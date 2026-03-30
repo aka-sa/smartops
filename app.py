@@ -33,3 +33,47 @@ if st.button("Run"):
 
 st.subheader("Evaluation Metrics")
 st.json(get_metrics())
+
+st.subheader("📊 Analytics Dashboard")
+
+expenses = get_all_expenses()
+
+if expenses:
+
+    amounts = [e[0] for e in expenses]
+    categories = [e[1] for e in expenses]
+
+    # -------- LINE CHART (SPENDING TREND) --------
+    st.write("### 📈 Spending Trend")
+
+    fig1 = plt.figure()
+    plt.plot(amounts)
+    plt.xlabel("Transactions")
+    plt.ylabel("Amount")
+    plt.title("Expense Trend")
+    st.pyplot(fig1)
+
+    # -------- BAR CHART (CATEGORY DISTRIBUTION) --------
+    st.write("### 📊 Category Distribution")
+
+    category_data = get_category_summary()
+    cats = [c[0] for c in category_data]
+    values = [c[1] for c in category_data]
+
+    fig2 = plt.figure()
+    plt.bar(cats, values)
+    plt.xlabel("Category")
+    plt.ylabel("Total Spend")
+    plt.title("Category-wise Spending")
+    st.pyplot(fig2)
+
+    # -------- AI INSIGHTS --------
+    st.write("### 🧠 AI Insights")
+
+    insights = ai_insight_agent(expenses)
+
+    for insight in insights:
+        st.write(insight)
+
+else:
+    st.info("No expense data yet. Add some data to see analytics.")
