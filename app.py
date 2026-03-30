@@ -1,9 +1,11 @@
 
 import streamlit as st
 from llm import parse_intent
-from agents import finance_agent, inventory_agent, insight_agent
+from agents import finance_agent, inventory_agent, insight_agent, ai_insight_agent
 from memory import add_memory, search_memory
 from evaluation import update, get_metrics
+import matplotlib.pyplot as plt
+from database import get_all_expenses, get_category_summary
 
 st.title("SmartOps V3.1 Research System")
 
