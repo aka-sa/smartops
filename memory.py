@@ -1,26 +1,20 @@
 
-import faiss
-import numpy as np
+import faiss, numpy as np
+DIM=16
+index=faiss.IndexFlatL2(DIM)
+store=[]
 
-dim = 8
-index = faiss.IndexFlatL2(dim)
+def embed(t):
+    v=np.zeros(DIM)
+    for i,c in enumerate(t[:DIM]):
+        v[i]=ord(c)%50
+    return v.astype('float32')
 
-memory_store = []
+def add_memory(t):
+    index.add(np.array([embed(t)]))
+    store.append(t)
 
-def embed(text):
-    vec = np.zeros(dim)
-    for i, c in enumerate(text[:dim]):
-        vec[i] = ord(c) % 10
-    return vec.astype('float32')
-
-def add_memory(text):
-    v = embed(text)
-    index.add(np.array([v]))
-    memory_store.append(text)
-
-def search_memory(query):
-    if len(memory_store) == 0:
-        return []
-    v = embed(query)
-    D, I = index.search(np.array([v]), k=2)
-    return [memory_store[i] for i in I[0] if i < len(memory_store)]
+def search_memory(q,k=2):
+    if not store: return []
+    D,I=index.search(np.array([embed(q)]),k)
+    return [store[i] for i in I[0] if i<len(store)]

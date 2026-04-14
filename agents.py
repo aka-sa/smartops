@@ -1,34 +1,21 @@
 
-def finance_agent(text):
-    return f"Expense processed: {text}"
+from database import add_expense, get_all
+import numpy as np
 
-def inventory_agent(text):
-    return f"Inventory updated: {text}"
+def finance_agent(d):
+    add_expense(d["amount"], d["category"])
+    return f"Saved ₹{d['amount']} for {d['category']}"
 
-def insight_agent(text):
-    return "Basic insights generated"
+def forecast():
+    data=get_all()
+    if len(data)<2: return "Not enough data"
+    trend=np.polyfit(range(len(data)),data,1)
+    next_val=trend[0]*len(data)+trend[1]
+    return f"Next expense prediction: ₹{round(next_val,2)}"
 
-def ai_insight_agent(expenses):
-    if not expenses:
-        return ["No data yet"]
-
-    insights = []
-
-    total = sum([e[0] for e in expenses])
-
-    if total > 1000:
-        insights.append("⚠️ High spending detected")
-
-    # category analysis
-    category_map = {}
-    for amt, cat in expenses:
-        category_map[cat] = category_map.get(cat, 0) + amt
-
-    top_category = max(category_map, key=category_map.get)
-
-    insights.append(f"💡 Highest spending in: {top_category}")
-
-    if len(expenses) > 5:
-        insights.append("📊 Frequent transactions detected")
-
-    return insights
+def anomaly():
+    data=get_all()
+    if len(data)<2: return []
+    mean=np.mean(data)
+    std=np.std(data)
+    return [x for x in data if abs(x-mean)>2*std]
